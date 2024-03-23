@@ -1,11 +1,11 @@
 // require('dotenv').config({path:'./env'});
-
+import app from "./app.js";
+import express from "express";
 import dotenv from "dotenv";
-
 import connectDB from "./db/dbConnect.js";
 
 dotenv.config({
-    path:'./env'
+    path:'./.env'
 })
 
 
