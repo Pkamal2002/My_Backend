@@ -13,7 +13,7 @@ const generateAccessAndRefreshTokens = async(userId) => {
       const refreshToken = user.generateRefreshToken()
       
       user.refreshToken =refreshToken
-      user.save({ validateBeforeSave: false})
+     await user.save({ validateBeforeSave: false})
 
       return {accessToken, refreshToken}
     
@@ -38,7 +38,7 @@ const registerUser = asyncHandler(async(req,res)=>{
    // Check for user creation.
    // return response.
 
-   const {fullname ,email, username, password } = req.body
+   const {fullname, email, username, password } = req.body
 //    console.log("email: ", email);
    if(
     [fullname, email, username, password].some((field)=> 
@@ -118,16 +118,17 @@ const loginUser = asyncHandler( async(req, res) =>{
   // send cookie.
 
   const {email, username, password} = req.body
-  if(!username || !email){
-    if (!username && !email){
-      throw new ApiError(404, "username or email is required")
-    }
-  }
-
-  // if(!(username || email)){
-  //   throw new ApiError(400, "Username or email is required")
-
+  // if(!username || !email){
+  //   if (!username && !email){
+  //     throw new ApiError(404, "username or email is required")
+  //   }
   // }
+ 
+
+  if(!(username || email)){
+    throw new ApiError(400, "Username or email is required")
+
+  }
 
   const user = await User.findOne({
     $or: [ {username}, {email} ]
@@ -201,7 +202,7 @@ const logoutUser = asyncHandler(async(req, res) => {
 const refreshAccessToken = asyncHandler(async(req, res) => {
   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
-  if (incomingRefreshToken){
+  if (!incomingRefreshToken){
     throw new ApiError(401, "unauthorized request")
   }
 
